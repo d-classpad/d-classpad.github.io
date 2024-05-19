@@ -2095,8 +2095,35 @@
   const MT_FC = "FC";
   const MT_SOLAR = "SOLAR";
 
-  const emulatorList = {};
-  const emulatorGroup = [];
+  const emulatorList = {
+    "EY023": {
+        "name": "fx-880BTG",
+        "language": "vn",
+        "decimal": "[.]",
+        "qr": "2",
+        "background": "#3A3A3A"
+    },
+    "CY298": {
+        "name": "fx-580VN X",
+        "language": "vi",
+        "decimal": "[.]",
+        "qr": "0",
+        "background": "#4D4D4D"
+    },
+    "CY860": {
+        "name": "fx-570VN PLUS 2nd edition",
+        "background": "#4d4d4d"
+    }
+};
+const emulatorGroup = [{
+    "shortName": "VN",
+    "name": {
+        "en": "Vietnam",
+        "zh": "越南",
+        "vi": "Việt Nam"
+    },
+    "models": ["EY023", "CY298", "CY860"]
+}];
   // Since simlib.wasm assumes global states, SimWrapper must in fact be a singleton.
   // Thus, it's not wrong to store the instance in a global variable.
   const SimWrapper = Comlink.wrap(new Worker("./lib/simwrapper.js?1687185326516"))
