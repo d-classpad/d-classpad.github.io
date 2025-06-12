@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<title>Popup Display Screen</title>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: #d6e3d6;
+        overflow: hidden;
+    }
+
+    #container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform-origin: left top;
+    }
+
+    #status {
+        position: absolute;
+        width: 278px;
+    }
+
+    #screen {
+        position: absolute;
+        width: 278px;
+        top: 13px;
+    }
+
+    .pixelated {
+        /* http://phrogz.net/tmp/canvas_image_zoom.html */
+        image-rendering: pixelated;
+    }
+</style>
+<div id="container"></div>
+<div id="warning" style="display: none;">
+    <div>Cannot open this page directly</div>
+    <div>不能直接打开此页面</div>
+	<div>Trang này không thể được mở trực tiếp</div>
+</div>
+<script>
+  const parentWindow = window.opener;
+  if (!parentWindow) {
+    warning.style.display = "block";
+    throw new Error("Cannot open this page directly.");
+  }
+
+  const parentDocument = parentWindow.document;
+  const parentStatus = parentDocument.getElementById("status");
+  const parentScreen = parentDocument.getElementById("screen");
+  const container = document.getElementById("container");
+  container.appendChild(parentStatus.cloneNode(true));
+  container.appendChild(parentScreen.cloneNode(true));
+  const ctx = document.getElementById("screen").getContext("2d");
+  const status = document.getElementById("status");
+
+  requestAnimationFrame(function render() {
+    status.innerHTML = parentStatus.innerHTML;
+    ctx.putImageData(parentWindow.imageData, 0, 0);
+
+    requestAnimationFrame(render);
+  })
+
+  const handleResize = () => {
+    const width = 278
+    const height = 106
+    const scale = Math.min(document.documentElement.clientWidth / width, document.documentElement.clientHeight / height)
+    container.style.width = width + 'px'
+    container.style.height = height + 'px'
+    container.style.transform = `translate(
+			${(document.documentElement.clientWidth - width * scale) / 2}px,
+			${(document.documentElement.clientHeight - height * scale) / 2}px
+		) scale(${scale})`
+  }
+
+  onresize = handleResize;
+  handleResize();
+  setTimeout(handleResize, 5);
+
+  oncontextmenu = (e) => {
+    e.preventDefault();
+    parentWindow.takeScreenshot();
+    return false;
+  };
+
+  onkeydown = onkeyup = event => {
+    parentWindow.dispatchEvent(new KeyboardEvent(event.type, event))
+  }
+
+  onwheel = event => {
+    parentWindow.container.dispatchEvent(new WheelEvent(event.type, event))
+  }
+
+</script>
